@@ -1,8 +1,8 @@
-"""OpenRouter API client for making LLM requests."""
+"""Ollama API client for making LLM requests."""
 
 import httpx
 from typing import List, Dict, Any, Optional
-from .config import OPENROUTER_API_KEY, OPENROUTER_API_URL
+from .config import *
 
 
 async def query_model(
@@ -22,30 +22,34 @@ async def query_model(
         Response dict with 'content' and optional 'reasoning_details', or None if failed
     """
     headers = {
-        "Authorization": f"Bearer {OPENROUTER_API_KEY}",
         "Content-Type": "application/json",
     }
 
     payload = {
         "model": model,
-        "messages": messages,
+        "prompt": messages,
     }
 
     try:
         async with httpx.AsyncClient(timeout=timeout) as client:
             response = await client.post(
-                OPENROUTER_API_URL,
+                OLLAMA_ENDPOINTS[model] + OLLAMA_API_PATH,
                 headers=headers,
                 json=payload
             )
             response.raise_for_status()
 
             data = response.json()
-            message = data['choices'][0]['message']
+
+            # Vérifier que la génération est complète
+            if not data.get('done', False): 
+                print(f"Warning: Model {model} response not complete")
+
+            message = data.get('message', {})
 
             return {
-                'content': message.get('content'),
-                'reasoning_details': message.get('reasoning_details')
+                'content': message.get('content', ''),
+                'reasoning_details': None
             }
 
     except Exception as e:
