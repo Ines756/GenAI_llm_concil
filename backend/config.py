@@ -5,22 +5,26 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-# OpenRouter API key
-OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY")
 
-# Council members - list of OpenRouter model identifiers
+# Council members - list of model identifiers
 COUNCIL_MODELS = [
-    "openai/gpt-5.1",
-    "google/gemini-3-pro-preview",
-    "anthropic/claude-sonnet-4.5",
-    "x-ai/grok-4",
+    "gemma2:2b",  # Noms de modèles Ollama (sans le préfixe ollama/)
+    "llama3.2:latest",
 ]
 
 # Chairman model - synthesizes final response
-CHAIRMAN_MODEL = "google/gemini-3-pro-preview"
+CHAIRMAN_MODEL = "mistral:latest"
 
-# OpenRouter API endpoint
-OPENROUTER_API_URL = "https://openrouter.ai/api/v1/chat/completions"
+# API endpoints - configurable for distributed setup
+# Format: {"model_name": "http://ip:port"}
+OLLAMA_ENDPOINTS = {
+    "gemma2:2b": os.getenv("OLLAMA_ENDPOINT_1", "http://localhost:11434"),
+    "llama3.2:latest": os.getenv("OLLAMA_ENDPOINT_2", "http://localhost:11434"),
+    "mistral:latest": os.getenv("OLLAMA_CHAIRMAN", "http://localhost:11434"),
+}
+
+# Ollama API path (same for all endpoints)
+OLLAMA_API_PATH = "/api/chat"  # ou "/api/generate" selon ce que tu utilises
 
 # Data directory for conversation storage
 DATA_DIR = "data/conversations"
