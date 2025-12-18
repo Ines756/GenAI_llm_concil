@@ -27,7 +27,8 @@ async def query_model(
 
     payload = {
         "model": model,
-        "prompt": messages,
+        "messages": messages,
+        "stream": False
     }
 
     try:
