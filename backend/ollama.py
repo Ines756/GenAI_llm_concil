@@ -54,7 +54,11 @@ async def query_model(
             }
 
     except Exception as e:
-        print(f"Error querying model {model}: {e}")
+        print(f"❌ Error querying model {model}: {e}")
+        print(f"   URL: {OLLAMA_ENDPOINTS[model] + OLLAMA_API_PATH}")
+        print(f"   Payload: {payload}")
+        import traceback
+        traceback.print_exc()  # Affiche la stack trace complète
         return None
 
 

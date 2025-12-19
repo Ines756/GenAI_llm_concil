@@ -69,6 +69,7 @@ CHAIRMAN_MODEL = "google/gemini-3-pro-preview"
 Terminal 1 (Backend):
 ```bash
 uv run python -m backend.main
+uvicorn backend.main:app --reload
 ```
 
 Terminal 2 (Frontend):

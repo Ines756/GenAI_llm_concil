@@ -10,17 +10,20 @@ load_dotenv()
 COUNCIL_MODELS = [
     "gemma2:2b",  # Noms de modèles Ollama (sans le préfixe ollama/)
     "llama3.2:latest",
+    "mistral:latest"
+
 ]
 
 # Chairman model - synthesizes final response
-CHAIRMAN_MODEL = "mistral:latest"
+CHAIRMAN_MODEL = "smollm2:135m"
 
 # API endpoints - configurable for distributed setup
 # Format: {"model_name": "http://ip:port"}
 OLLAMA_ENDPOINTS = {
     "gemma2:2b": os.getenv("OLLAMA_ENDPOINT_1", "http://localhost:11434"),
     "llama3.2:latest": os.getenv("OLLAMA_ENDPOINT_2", "http://localhost:11434"),
-    "mistral:latest": os.getenv("OLLAMA_CHAIRMAN", "http://localhost:11434"),
+    "mistral:latest": os.getenv("OLLAMA_ENDPOINT_3", "http://localhost:11434"),
+    "smollm2:135m": os.getenv("OLLAMA_CHAIRMAN", "http://localhost:11434"),
 }
 
 # Ollama API path (same for all endpoints)
