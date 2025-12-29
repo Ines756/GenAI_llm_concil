@@ -48,13 +48,12 @@ Edit `backend/config.py` to customize the council:
 
 ```python
 COUNCIL_MODELS = [
-    "openai/gpt-5.1",
-    "google/gemini-3-pro-preview",
-    "anthropic/claude-sonnet-4.5",
-    "x-ai/grok-4",
+    "gemma2:2b", 
+    "llama3.2:latest",
+    "mistral:latest"
 ]
 
-CHAIRMAN_MODEL = "google/gemini-3-pro-preview"
+CHAIRMAN_MODEL =  "smollm2:135m"
 ```
 
 ## Running the Application
