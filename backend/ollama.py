@@ -8,15 +8,15 @@ from .config import *
 async def query_model(
     model: str,
     messages: List[Dict[str, str]],
-    timeout: float = 120.0
+    timeout: float = 300.0
 ) -> Optional[Dict[str, Any]]:
     """
-    Query a single model via OpenRouter API.
+    Query a single model via Ollama API.
 
     Args:
-        model: OpenRouter model identifier (e.g., "openai/gpt-4o")
+        model: Ollama model identifier (e.g., "gemma2:2b", "llama3.2:latest")
         messages: List of message dicts with 'role' and 'content'
-        timeout: Request timeout in seconds
+        timeout: Request timeout in seconds (default 300s = 5 minutes)
 
     Returns:
         Response dict with 'content' and optional 'reasoning_details', or None if failed
@@ -53,6 +53,19 @@ async def query_model(
                 'reasoning_details': None
             }
 
+    except httpx.ReadTimeout:
+        print(f"❌ Timeout querying model {model} after {timeout}s")
+        print(f"   URL: {OLLAMA_ENDPOINTS[model] + OLLAMA_API_PATH}")
+        print(f"   This usually means:")
+        print(f"   - Ollama server is not running (start with 'ollama serve')")
+        print(f"   - Model '{model}' is not downloaded (run 'ollama pull {model}')")
+        print(f"   - Model is taking too long to respond (increase timeout)")
+        return None
+    except httpx.ConnectError:
+        print(f"❌ Cannot connect to Ollama server for {model}")
+        print(f"   URL: {OLLAMA_ENDPOINTS[model] + OLLAMA_API_PATH}")
+        print(f"   Make sure Ollama is running: 'ollama serve'")
+        return None
     except Exception as e:
         print(f"❌ Error querying model {model}: {e}")
         print(f"   URL: {OLLAMA_ENDPOINTS[model] + OLLAMA_API_PATH}")
