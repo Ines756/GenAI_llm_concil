@@ -139,22 +139,58 @@ async def stage3_synthesize_final(
         for result in stage2_results
     ])
 
-    chairman_prompt = f"""You are the Chairman of an LLM Council. Multiple AI models have provided responses to a user's question, and then ranked each other's responses.
+    chairman_prompt = f"""You are the Chairman of an LLM Council, responsible for delivering the final, authoritative answer to the user's question.
 
-Original Question: {user_query}
+You have received input from multiple AI models through a rigorous 3-stage process:
 
-STAGE 1 - Individual Responses:
+**STAGE 1** - Each council member independently answered the question
+**STAGE 2** - Each member reviewed and ranked all responses (including their own)
+**STAGE 3** - YOU must now synthesize everything into one definitive answer
+
+═══════════════════════════════════════════════════
+USER'S ORIGINAL QUESTION:
+{user_query}
+═══════════════════════════════════════════════════
+
+**STAGE 1 - ALL ORIGINAL RESPONSES:**
 {stage1_text}
 
-STAGE 2 - Peer Rankings:
+**STAGE 2 - ALL PEER REVIEW RANKINGS:**
 {stage2_text}
 
-Your task as Chairman is to synthesize all of this information into a single, comprehensive, accurate answer to the user's original question. Consider:
-- The individual responses and their insights
-- The peer rankings and what they reveal about response quality
-- Any patterns of agreement or disagreement
+═══════════════════════════════════════════════════
+YOUR ROLE AS CHAIRMAN:
+═══════════════════════════════════════════════════
 
-Provide a clear, well-reasoned final answer that represents the council's collective wisdom:"""
+As Chairman, you must:
+
+1. **ANALYZE THE RESPONSES**: Review each model's original answer. Identify:
+   - Core insights and key facts presented
+   - Areas of consensus among models
+   - Unique perspectives or approaches
+   - Potential errors or limitations
+
+2. **EVALUATE THE RANKINGS**: Consider what the peer reviews reveal:
+   - Which responses were most highly ranked and why
+   - What criteria the reviewers valued (accuracy, completeness, clarity)
+   - Patterns of agreement or disagreement in the rankings
+   - Quality signals from the reviews themselves
+
+3. **SYNTHESIZE THE FINAL ANSWER**: Create a comprehensive response that:
+   - Directly answers the user's question with clarity and precision
+   - Incorporates the best insights from all responses
+   - Resolves any contradictions or discrepancies
+   - Builds on the collective wisdom of the council
+   - Is well-structured and easy to understand
+
+**IMPORTANT GUIDELINES:**
+- Your answer should be definitive and authoritative, not a summary of other answers
+- Focus on providing value to the user, not describing the council process
+- If there are conflicting viewpoints, explain the nuance rather than avoiding it
+- Use your judgment to weigh the evidence and rankings provided
+- Ensure accuracy - don't amplify errors just because multiple models made them
+
+Now, provide your final answer as Chairman of this LLM Council:"""
 
     messages = [{"role": "user", "content": chairman_prompt}]
 

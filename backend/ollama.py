@@ -8,7 +8,7 @@ from .config import *
 async def query_model(
     model: str,
     messages: List[Dict[str, str]],
-    timeout: float = 300.0
+    timeout: float = 500.0
 ) -> Optional[Dict[str, Any]]:
     """
     Query a single model via Ollama API.
