@@ -1,8 +1,13 @@
-# LLM Council
+# LLM Council (Distributed)
 
-![llmcouncil](header.jpg)
+**Group members:** Claire CUCHE & Inès DARDE  
+**TD Group number:** CDOF2
 
-The idea of this repo is that instead of asking a question to your favorite LLM provider (e.g. OpenAI GPT 5.1, Google Gemini 3.0 Pro, Anthropic Claude Sonnet 4.5, xAI Grok 4, eg.c), you can group them into your "LLM Council". This repo is a simple, local web app that essentially looks like ChatGPT except it uses OpenRouter to send your query to multiple LLMs, it then asks them to review and rank each other's work, and finally a Chairman LLM produces the final response.
+---
+
+## Project overview
+
+The idea behind this project is that instead of asking a question to a single AI model, you can group them together within your own "LLM Council." This local web application, inspired by the ChatGPT interface, orchestrates several models running locally (via Ollama) on a distributed architecture.
 
 In a bit more detail, here is what happens when you submit a query:
 
@@ -10,78 +15,146 @@ In a bit more detail, here is what happens when you submit a query:
 2. **Stage 2: Review**. Each individual LLM is given the responses of the other LLMs. Under the hood, the LLM identities are anonymized so that the LLM can't play favorites when judging their outputs. The LLM is asked to rank them in accuracy and insight.
 3. **Stage 3: Final response**. The designated Chairman of the LLM Council takes all of the model's responses and compiles them into a single final answer that is presented to the user.
 
-## Vibe Code Alert
+Local changes and improvements included in this version:
+- Ollama integration (`backend/ollama.py`) for running models locally and avoiding external API costs.
+- Per-model metrics (latency, success rate) collected in `backend/metrics.py` and persisted to `data/metrics.json`.
+- A Monitoring Dashboard (`frontend/src/components/Dashboard.jsx`) that polls `GET /api/models/status` to display health, latency, success rate, and node IP.
+- Server-Sent Events streaming (`POST /api/conversations/{id}/message/stream`) to provide stage-by-stage progress updates to the UI.
 
-This project was 99% vibe coded as a fun Saturday hack because I wanted to explore and evaluate a number of LLMs side by side in the process of [reading books together with LLMs](https://x.com/karpathy/status/1990577951671509438). It's nice and useful to see multiple responses side by side, and also the cross-opinions of all LLMs on each other's outputs. I'm not going to support it in any way, it's provided here as is for other people's inspiration and I don't intend to improve it. Code is ephemeral now and libraries are over, ask your LLM to change it in whatever way you like.
+---
 
-## Setup
+## Project Structure
 
-### 1. Install Dependencies
+```
+llm-council/
+├─ CLAUDE.md
+├─ main.py
+├─ pyproject.toml
+├─ old_readme.md            # (README from original repo)
+├─ README.md                # (new_readme)
+├─ start.sh
+├─ uv.lock
+├─ backend/
+│  ├─ __init__.py
+│  ├─ config.py         # configuration for models and endpoints
+│  ├─ council.py        # 3-stage orchestration
+│  ├─ main.py           # FastAPI application
+│  ├─ ollama.py         # Ollama client (HTTP)
+│  ├─ storage.py        # JSON persistence for conversations
+│  ├─ metrics.py        # model metrics collection
+│  └─ __pycache__/
+├─ data/
+│  ├─ metrics.json
+│  └─ conversations/
+│     └─ *.json
+└─ frontend/
+   ├─ package.json
+   ├─ vite.config.js
+   ├─ index.html
+   ├─ src/
+   │  ├─ api.js
+   │  ├─ main.jsx
+   │  ├─ App.jsx
+   │  └─ components/
+   │     ├─ ChatInterface.jsx
+   │     ├─ Dashboard.jsx
+   │     ├─ Stage1.jsx
+   │     ├─ Stage2.jsx
+   │     └─ Stage3.jsx
+   └─ public/
+```
+---
+
+## Setup & installation
 
 The project uses [uv](https://docs.astral.sh/uv/) for project management.
 
-**Backend:**
+Prerequisites
+- Python 3.10+
+- Node.js (recommended latest LTS) + npm
+- Ollama to serve models locally
+
+Python libraries (from `pyproject.toml`)
+- fastapi
+- uvicorn[standard]
+- python-dotenv
+- httpx
+- pydantic
+
+### Distributed Architecture (Multi-computer)
+
+The main advantage of this project is that it allows you to distribute the computing load across several computers on your local network.
+
+1.  **On each machine** : Install Ollama and allow remote connections by setting the environment variable `OLLAMA_HOST=0.0.0.0`.
+2.  **Model** : Download the necessary templates onto each dedicated machine.
+    ```bash
+    ollama serve
+    ollama pull gemma2:2b
+    ollama pull llama3.2:latest
+    ollama pull mistral:latest  
+    ```
+
+### Install backend dependencies (recommended workflow):
 ```bash
+python -m venv .venv
+# Windows: .\.venv\Scripts\activate, Unix: source .venv/bin/activate
+pip install --upgrade pip
 uv sync
 ```
 
-**Frontend:**
+### Install frontend dependencies:
 ```bash
 cd frontend
 npm install
 cd ..
 ```
 
-### 2. Configure API Key
-
-Create a `.env` file in the project root:
+### Environment variables :
+Create an `.env` file at the root of the project to define your network topology. You can mix localhost and remote IP addresses.
 
 ```bash
-OPENROUTER_API_KEY=sk-or-v1-...
+OLLAMA_ENDPOINT_1=http://localhost:11434
+OLLAMA_ENDPOINT_2=http://localhost:11434
+OLLAMA_CHAIRMAN=http://localhost:11434
+OLLAMA_ENDPOINT_3=http://localhost:11434
 ```
 
-Get your API key at [openrouter.ai](https://openrouter.ai/). Make sure to purchase the credits you need, or sign up for automatic top up.
+---
 
-### 3. Configure Models (Optional)
+## API Endpoints (summary)
 
-Edit `backend/config.py` to customize the council:
+- GET / → Health check
+- GET /api/conversations → List conversations (metadata)
+- POST /api/conversations → Create a new conversation
+- GET /api/conversations/{conversation_id} → Get conversation with messages
+- POST /api/conversations/{conversation_id}/message → Run the 3-stage process (synchronous)
+- POST /api/conversations/{conversation_id}/message/stream → Run the 3-stage process and stream progress via SSE
+- GET /api/models/status → Check model health/performance
 
-```python
-COUNCIL_MODELS = [
-    "gemma2:2b", 
-    "llama3.2:latest",
-    "mistral:latest"
-]
+---
 
-CHAIRMAN_MODEL =  "smollm2:135m"
-```
+## Instructions to run the demo
 
-## Running the Application
-
-**Option 1: Use the start script**
+Quick start (single command):
 ```bash
 ./start.sh
 ```
 
-**Option 2: Run manually**
-
-Terminal 1 (Backend):
+Manual run (two terminals):
+1) Backend
 ```bash
+# activate your venv first
 uv run python -m backend.main
+# or
 uvicorn backend.main:app --reload
 ```
-
-Terminal 2 (Frontend):
+2) Frontend
 ```bash
 cd frontend
 npm run dev
 ```
 
-Then open http://localhost:5173 in your browser.
+Open UI: http://localhost:5173 in your browser
 
-## Tech Stack
+---
 
-- **Backend:** FastAPI (Python 3.10+), async httpx, OpenRouter API
-- **Frontend:** React + Vite, react-markdown for rendering
-- **Storage:** JSON files in `data/conversations/`
-- **Package Management:** uv for Python, npm for JavaScript
