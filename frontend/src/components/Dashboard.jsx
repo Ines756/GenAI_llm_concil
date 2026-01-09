@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import './Dashboard.css';
 
 export default function Dashboard() {
-  const [data, setData] = useState({ health: {}, performance: {} });
+  const [data, setData] = useState({ health: {}, performance: {}, network: {} });
 
   useEffect(() => {
     const fetchStatus = async () => {
@@ -12,34 +12,55 @@ export default function Dashboard() {
           const json = await res.json();
           setData(json);
         }
-      } catch (e) {
-        console.error("Erreur Monitoring:", e);
-      }
+      } catch (e) { console.error("Monitoring error", e); }
     };
-
     fetchStatus();
     const interval = setInterval(fetchStatus, 5000);
     return () => clearInterval(interval);
   }, []);
 
+  // --- LOGIQUE DES BADGES ---
+  const onlineModels = Object.keys(data.performance).filter(
+    m => data.health[m] === 'online' && data.performance[m].avg_latency > 0
+  );
+
+  // Modèle le plus rapide
+  const fastestModel = onlineModels.length > 0 
+    ? onlineModels.reduce((prev, curr) => 
+        data.performance[prev].avg_latency < data.performance[curr].avg_latency ? prev : curr)
+    : null;
+
+  // Modèle le plus fiable (100% success rate)
+  const reliableModels = onlineModels.filter(m => data.performance[m].success_rate === "100.0%");
+
   return (
     <div className="model-dashboard">
       {Object.keys(data.health).map(model => {
-        // Sécurité : on vérifie si les perfs existent pour ce modèle
-        const stats = data.performance[model] || { avg_latency: 0, total: 0 };
+        const stats = data.performance[model] || { avg_latency: 0, total: 0, success_rate: "0%" };
+        const ip = data.network[model] || "Inconnu";
         const isOnline = data.health[model] === 'online';
 
         return (
           <div key={model} className={`model-card ${isOnline ? 'online' : 'offline'}`}>
-            <div className="status-dot"></div>
-            <div className="model-info">
+            <div className="card-header">
+              <div className="status-dot"></div>
               <span className="model-name">{model}</span>
-              <div className="model-stats">
-                <span className="latency">
-                  {stats.total > 0 ? `${stats.avg_latency}s` : 'En attente...'}
-                </span>
-                {/* On identifie le Chairman via le nom du modèle défini dans config.py */}
-                {model === "mistral:latest" && <span className="badge-chairman">Chairman</span>}
+              {model === "mistral:latest" && <span className="badge chairman">Chairman</span>}
+            </div>
+
+            <div className="network-info">
+              <span className="ip-label">Node IP:</span>
+              <span className="ip-address">{ip}</span>
+            </div>
+
+            <div className="stats-row">
+              <span className="latency">
+                {stats.total > 0 ? `⚡ ${stats.avg_latency}s` : '⏳ No data'}
+              </span>
+              <div className="badges-container">
+                {model === fastestModel && isOnline && <span className="badge fastest">🚀 Fastest</span>}
+                {reliableModels.includes(model) && isOnline && stats.total > 0 && 
+                  <span className="badge reliable">🛡️ Reliable</span>}
               </div>
             </div>
           </div>

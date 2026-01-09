@@ -102,3 +102,45 @@
   font-weight: bold;
   text-transform: uppercase;
 }
+
+.network-info {
+  background: rgba(0, 0, 0, 0.3);
+  padding: 5px 10px;
+  border-radius: 6px;
+  font-family: 'Courier New', monospace;
+  font-size: 0.8rem;
+  margin: 10px 0;
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.ip-label { color: #666; }
+.ip-address { color: #00ff00; } /* Vert style matrix/terminal */
+
+.stats-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  margin-top: auto;
+}
+
+.badges-container {
+  display: flex;
+  gap: 5px;
+}
+
+.badge {
+  font-size: 0.65rem;
+  font-weight: bold;
+  padding: 3px 8px;
+  border-radius: 4px;
+  text-transform: uppercase;
+}
+
+.badge.chairman { background: #6200ea; color: white; }
+.badge.fastest { background: #ffd700; color: #000; box-shadow: 0 0 10px rgba(255, 215, 0, 0.3); }
+.badge.reliable { background: #00bcd4; color: white; }
+
+.model-card.offline .ip-address { color: #f44336; }

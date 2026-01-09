@@ -210,7 +210,8 @@ async def get_models_status():
                 results[model] = "offline"
     
     perf = get_performance_data()
-    return {"health": results, "performance": perf}
+    network_info = {model: url.replace("http://", "").split(":")[0] for model, url in OLLAMA_ENDPOINTS.items()}
+    return {"health": results, "performance": perf,"network": network_info}
 
 
 if __name__ == "__main__":
