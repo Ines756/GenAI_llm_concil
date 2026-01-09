@@ -1,5 +1,7 @@
 # LLM Council (Distributed)
 
+![llmcouncil](header.jpg)
+
 **Group members:** Claire CUCHE & Inès DARDE  
 **TD Group number:** CDOF2
 
