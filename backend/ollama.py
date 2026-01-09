@@ -1,5 +1,7 @@
 """Ollama API client for making LLM requests."""
 
+import time
+from backend.metrics import update_metric
 import httpx
 from typing import List, Dict, Any, Optional
 from .config import *
@@ -31,6 +33,9 @@ async def query_model(
         "stream": False
     }
 
+    start_time = time.perf_counter()
+    success = False
+
     try:
         async with httpx.AsyncClient(timeout=timeout) as client:
             response = await client.post(
@@ -39,6 +44,7 @@ async def query_model(
                 json=payload
             )
             response.raise_for_status()
+            success = True
 
             data = response.json()
 
@@ -73,6 +79,10 @@ async def query_model(
         import traceback
         traceback.print_exc()  # Affiche la stack trace complète
         return None
+    finally:
+        # --- Enregistrement des métriques ---
+        latency = time.perf_counter() - start_time
+        update_metric(model, latency, success)
 
 
 async def query_models_parallel(

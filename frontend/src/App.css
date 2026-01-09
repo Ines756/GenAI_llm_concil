@@ -13,3 +13,82 @@
     'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
     sans-serif;
 }
+.tab-navigation {
+  display: flex;
+  gap: 10px;
+  padding: 10px 20px;
+  background: rgba(0, 0, 0, 0.2);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.tab-navigation button {
+  background: transparent;
+  border: none;
+  color: #888;
+  padding: 8px 16px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.3s;
+  border-radius: 6px;
+}
+
+.tab-navigation button.active {
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+}
+
+.status-view {
+  padding: 40px;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.status-view h2 {
+  color: white;
+  margin-bottom: 30px;
+  text-align: center;
+}
+
+/* Conteneur global */
+.app-container {
+  display: flex;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden; /* Empêche la page entière de scroller */
+  background-color: #1a1a1a;
+  color: white;
+}
+
+/* Zone à droite de la sidebar */
+.main-viewport {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+}
+
+/* La barre d'onglets fixe en haut */
+.tab-navigation {
+  height: 60px;
+  display: flex;
+  align-items: center;
+  padding: 0 20px;
+  background: #252525;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  z-index: 10;
+}
+
+/* La zone qui contient soit le Chat, soit le Dashboard */
+.tab-content {
+  flex: 1;
+  overflow-y: auto; /* Seul ce contenu peut scroller ! */
+  position: relative;
+}
+
+/* Ajustement pour que le dashboard ne soit pas trop large */
+.status-view {
+  padding: 30px;
+  max-width: 1200px;
+  margin: 0 auto;
+}

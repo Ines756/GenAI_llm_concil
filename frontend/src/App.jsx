@@ -1,10 +1,12 @@
 import { useState, useEffect } from 'react';
 import Sidebar from './components/Sidebar';
 import ChatInterface from './components/ChatInterface';
+import Dashboard from './components/Dashboard';
 import { api } from './api';
 import './App.css';
 
 function App() {
+  const [activeTab, setActiveTab] = useState('chat');
   const [conversations, setConversations] = useState([]);
   const [currentConversationId, setCurrentConversationId] = useState(null);
   const [currentConversation, setCurrentConversation] = useState(null);
@@ -182,20 +184,50 @@ function App() {
   };
 
   return (
-    <div className="app">
-      <Sidebar
-        conversations={conversations}
-        currentConversationId={currentConversationId}
-        onSelectConversation={handleSelectConversation}
-        onNewConversation={handleNewConversation}
-      />
-      <ChatInterface
-        conversation={currentConversation}
-        onSendMessage={handleSendMessage}
-        isLoading={isLoading}
-      />
+  <div className="app-container">
+    <Sidebar
+      conversations={conversations}
+      currentConversationId={currentConversationId}
+      onSelectConversation={(id) => {
+        setCurrentConversationId(id);
+        setActiveTab('chat');
+      }}
+      onNewConversation={handleNewConversation}
+    />
+    
+    <div className="main-viewport">
+      <nav className="tab-navigation">
+        <button 
+          className={activeTab === 'chat' ? 'active' : ''} 
+          onClick={() => setActiveTab('chat')}
+        >
+          💬 Council Chat
+        </button>
+        <button 
+          className={activeTab === 'status' ? 'active' : ''} 
+          onClick={() => setActiveTab('status')}
+        >
+          📊 Monitoring
+        </button>
+      </nav>
+
+      <div className="tab-content">
+        {activeTab === 'chat' ? (
+          <ChatInterface
+            conversation={currentConversation}
+            onSendMessage={handleSendMessage}
+            isLoading={isLoading}
+          />
+        ) : (
+          <div className="status-view">
+            <Dashboard />
+          </div>
+        )}
+      </div>
     </div>
-  );
+  </div>
+);
+
 }
 
 export default App;

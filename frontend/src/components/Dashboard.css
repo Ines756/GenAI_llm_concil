@@ -1,0 +1,104 @@
+/* Container principal du Dashboard */
+.model-dashboard {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 15px;
+  padding: 20px;
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  margin-bottom: 20px;
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+}
+
+/* Carte individuelle pour chaque modèle */
+.model-card {
+  position: relative;
+  padding: 15px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  transition: transform 0.2s ease, background 0.3s ease;
+}
+
+.model-card:hover {
+  transform: translateY(-2px);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+/* Indicateur d'état (Point lumineux) */
+.status-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  position: relative;
+}
+
+/* Animation de pulsation pour les modèles en ligne */
+.model-card.online .status-dot {
+  background-color: #4caf50;
+  box-shadow: 0 0 10px #4caf50;
+  animation: pulse-green 2s infinite;
+}
+
+.model-card.offline .status-dot {
+  background-color: #f44336;
+  box-shadow: 0 0 10px #f44336;
+}
+
+@keyframes pulse-green {
+  0% { box-shadow: 0 0 0 0 rgba(76, 175, 80, 0.7); }
+  70% { box-shadow: 0 0 0 10px rgba(76, 175, 80, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(76, 175, 80, 0); }
+}
+
+/* Le conteneur doit avoir un fond pour que le texte blanc ressorte */
+.model-dashboard {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 20px;
+  padding: 30px;
+  background: #121212; /* Fond sombre pour le contraste */
+  border-radius: 20px;
+  margin-top: 20px;
+}
+
+.model-card {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 20px;
+  border-radius: 15px;
+  display: flex;
+  flex-direction: column; /* On passe en colonne pour plus d'espace */
+  align-items: flex-start;
+  gap: 10px;
+  min-height: 120px;
+}
+
+.model-name {
+  color: #ffffff; /* Texte en blanc pur */
+  font-family: 'Inter', sans-serif;
+  font-weight: bold;
+  font-size: 1.1rem;
+}
+
+.latency {
+  color: #aaa; /* Gris clair pour les chiffres */
+  font-size: 0.9rem;
+}
+
+/* Style spécifique pour le Chairman */
+.badge-chairman {
+  background: #6200ea;
+  color: white;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 0.7rem;
+  font-weight: bold;
+  text-transform: uppercase;
+}

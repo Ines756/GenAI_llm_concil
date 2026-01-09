@@ -1,5 +1,7 @@
 """FastAPI backend for LLM Council."""
 
+from backend.config import OLLAMA_ENDPOINTS
+from backend.metrics import get_performance_data
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
@@ -8,6 +10,7 @@ from typing import List, Dict, Any
 import uuid
 import json
 import asyncio
+import httpx
 
 from . import storage
 from .council import run_full_council, generate_conversation_title, stage1_collect_responses, stage2_collect_rankings, stage3_synthesize_final, calculate_aggregate_rankings
@@ -193,7 +196,23 @@ async def send_message_stream(conversation_id: str, request: SendMessageRequest)
         }
     )
 
+@app.get("/api/models/status")
+async def get_models_status():
+    """Vérifie la santé de chaque endpoint Ollama en temps réel."""
+    results = {}
+    async with httpx.AsyncClient(timeout=2.0) as client:
+        for model, url in OLLAMA_ENDPOINTS.items():
+            try:
+                # On ping juste l'URL de base d'Ollama
+                resp = await client.get(url)
+                results[model] = "online" if resp.status_code == 200 else "error"
+            except:
+                results[model] = "offline"
+    
+    perf = get_performance_data()
+    return {"health": results, "performance": perf}
+
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8001)
+    uvicorn.run(app, host="0.0.0.0", port=8000)
