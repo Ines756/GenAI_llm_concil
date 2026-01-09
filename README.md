@@ -93,6 +93,7 @@ The main advantage of this project is that it allows you to distribute the compu
     ollama serve
     ollama pull gemma2:2b
     ollama pull llama3.2:latest
+    ollama pull smollm2:135m
     ollama pull mistral:latest  
     ```
 
@@ -157,6 +158,22 @@ npm run dev
 ```
 
 Open UI: http://localhost:5173 in your browser
+
+---
+
+
+## Generative AI Usage Statement
+
+In accordance with the project guidelines, here is the disclosure of AI tool usage during development:
+
+### Areas of Usage
+* **UI/UX Development**: LLMs assisted in the layout and styling of the React components, specifically for the `.jsx` structure and `.css` styling of the **Monitoring Dashboard** and **Chat Interface**.
+* **Prompt Engineering**: AI was used to refine and optimize the **Chairman's synthesis prompt** to ensure it effectively weighs peer rankings and maintains an authoritative tone without generating original opinions.
+* **Technical Troubleshooting**: We consulted AI to debug **network connection errors** between distributed nodes, leading to the identification of firewall blocks and the requirement for the `OLLAMA_HOST=0.0.0.0` configuration.
+* **Documentation**: We used AI to help structure this `README.md` and the Technical Report to ensure clarity and professional formatting.
+
+### Human Oversight & Validation
+Every line of code generated or suggested by AI, as well as the overall architecture of the system, was **manually reviewed, tested, and validated by our team**.
 
 ---
 
